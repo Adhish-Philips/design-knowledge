@@ -1,0 +1,72 @@
+class Main
+    {
+        public static void Main(string[] args)
+        {
+            ITaskScheduler scheduler = new TaskScheduler(new SimpleQueue());
+            scheduler.Schedule();
+        }
+    }
+
+    interface ITaskScheduler
+    {
+        void Schedule();
+    }
+
+    class TaskScheduler : ITaskScheduler
+    {
+        private IQueue _queue;
+        public TaskScheduler(IQueue queue)
+        {
+            _queue = queue;
+        }
+
+        public void Schedule()
+        {
+            _queue.DeQueue();;
+        }
+    }
+
+    interface IQueue
+    {
+        void EnQueue();
+        void DeQueue();
+    }
+
+    class SimpleQueue : IQueue
+    {
+        public void EnQueue()
+        {
+            
+        }
+
+        public void DeQueue()
+        {
+            
+        }
+    }
+
+    class CircularQueue : IQueue
+    {
+        public void EnQueue()
+        {
+            
+        }
+
+        public void DeQueue()
+        {
+            
+        }
+    }
+
+    class FakeQueue : IQueue
+    {
+        public void EnQueue()
+        {
+            
+        }
+
+        public void DeQueue()
+        {
+            
+        }
+    }
