@@ -1,0 +1,229 @@
+Dependency injection:
+Dependenct objects are created outside the boundary of the class. There are 3 types of dependency injection techniques:
+1. Constructor injection : object injected through method. Hence once injected instance of the object cannot be changed.
+2. Property injection : object is injected as Property , instance can be changed later using setter preperty if required.
+3. Method Injection : object is injected thorught method. Used in compo
+
+Stategy pattern:
+Family of classes which independently implements the logic and instance of its own is created by higher module based on the requirement. 
+In the below example PatientNameSearchService, PatientContactEmailIdrSearchService are independent of each other and has its own strategy to search based on the name and email.
+
+Composite pattern (Strategy) :
+Composite class implements and inherits the smae interface/class used by other strategy class. 
+This helps in the composite class knowing all the strategy class and also the higher modules can know only about the composite class.
+
+Patient serch service example:
+namespace PatientSearcherNamespace
+{
+    class PatientDataModel
+    {
+        public string mrn, name, contactNumber, emailId;
+    }
+
+    interface IPatientParameterBasedSearchService
+    {
+        IList<PatientDataModel> Search(IList<PatientDataModel> patientDataModels);
+    }
+    class PatientNameSearchService : IPatientParameterBasedSearchService
+    {
+        public string PatientName { get; }
+        public PatientNameSearchService(string patientName)
+        {
+            PatientName = patientName;
+        }
+        public IList<PatientDataModel> Search(IList<PatientDataModel> patientDataModels)
+        {
+            return new List<PatientDataModel>();
+        }
+
+    }
+    class PatientContactNumberSearchService : IPatientParameterBasedSearchService
+    {
+        public string PatientNumber { get; }
+        public PatientContactNumberSearchService(string patientNumber)
+        {
+            PatientNumber = patientNumber;
+        }
+        public IList<PatientDataModel> Search(IList<PatientDataModel> patientDataModels)
+        {
+            return new List<PatientDataModel>();
+        }
+    }
+    class PatientContactEmailIdrSearchService : IPatientParameterBasedSearchService
+    {
+        public string PatientEmail { get; }
+        public PatientContactEmailIdrSearchService(string patientEmail)
+        {
+            PatientEmail = patientEmail;
+        }
+
+        public IList<PatientDataModel> Search(IList<PatientDataModel> patientDataModels)
+        {
+            return new List<PatientDataModel>();
+        }
+    }
+
+    class PatientParameterSearch : IPatientParameterBasedSearchService
+    {
+        private IList<IPatientParameterBasedSearchService> _patientSearchServiceList;
+        public IList<PatientDataModel> Search(IList<PatientDataModel> patientDataModels)
+        {
+            return new List<PatientDataModel>();
+        }
+
+        public void AddStrategy(IPatientParameterBasedSearchService searchService)
+        {
+            _patientSearchServiceList.Add(searchService);
+        }
+        public void RemoveStrategy(IPatientParameterBasedSearchService searchService)
+        {
+            _patientSearchServiceList.Remove(searchService);
+        }
+    }
+
+    class PatientSearchService
+    {
+        IPatientDataMemoryRepository _repositoryRef;
+        public PatientSearchService(IPatientDataMemoryRepository repository)
+        {
+            this._repositoryRef = repository;
+        }
+
+        // TODO : Method injection used
+        public IList<PatientDataModel> Search(IPatientParameterBasedSearchService searchService)
+        {
+            return searchService.Search(_repositoryRef.GetAllPatients());
+        }
+
+    }
+
+    interface IPatientDataMemoryRepository
+    {
+        IList<PatientDataModel> GetAllPatients();
+    }
+
+    class PatientDataMemoryRepository : IPatientDataMemoryRepository
+    {
+        //vector
+        private List<PatientDataModel> _patientStore;
+        public IList<PatientDataModel> GetAllPatients()
+        {
+            return _patientStore;
+        }
+
+    }
+}
+
+
+ Organization example for composite strategy: 
+ Where update sent to Employee must be sent to HR, Manager, Developer and tester. Employee contains HR, HR contains Manager, Manager contains Developer and Tester.
+ Based on the requirement update can be sent to either HR or/and Manager only or to everyone.
+ 
+ class Organization
+    {
+        public void Update()
+        {
+            IEmployee employee = new Employee();
+            IEmployee hr = new Hr();
+            IEmployee manager = new Manager();
+            IEmployee tester = new Tester();
+            IEmployee developer = new Developer();
+
+            IEmployeeAdmin employeeAdmin = (Employee) employee;
+            IEmployeeAdmin hrAdmin = (Hr)hr;
+            IEmployeeAdmin managerAdmin = (Manager)manager;
+
+            managerAdmin.AddEmployee(tester);
+            managerAdmin.AddEmployee(developer);
+            hrAdmin.AddEmployee(manager);
+            employeeAdmin.AddEmployee(hr);
+
+            employee.Update();
+        }
+
+        public static void Main(string[] args)
+        {
+            new Organization().Update();
+        }
+    }
+
+
+    class Employee : EmployeeAdmin, IEmployee
+    {
+        public new void Update()
+        {
+            Console.WriteLine("Employee received update");
+            foreach (var employee in Employees)
+            {
+                employee.Update();
+            }
+        }
+    }
+
+    class EmployeeAdmin : IEmployeeAdmin
+    {
+        protected IList<IEmployee> Employees = new List<IEmployee>();
+        public void AddEmployee(IEmployee employee)
+        {
+            Employees.Add(employee);
+        }
+
+        public void RemoveEmployee(IEmployee employee)
+        {
+            Employees.Remove(employee);
+        }
+    }
+
+    class Hr : EmployeeAdmin, IEmployee
+    {
+        public new void Update()
+        {
+            Console.WriteLine("Hr received update");
+            foreach (var employee in Employees)
+            {
+                employee.Update();
+            }
+        }
+    }
+
+    class Manager : EmployeeAdmin,IEmployee
+    {
+        public new void Update()
+        {
+            Console.WriteLine("Manager received update");
+            foreach (var employee in Employees)
+            {
+                employee.Update();
+            }
+        }
+    }
+
+    interface IEmployeeAdmin
+    {
+        void AddEmployee(IEmployee employee);
+        void RemoveEmployee(IEmployee employee);
+    }
+
+    interface IEmployee
+    {
+        void Update();
+    }
+
+    class Developer : IEmployee
+    {
+        public void Update()
+        {
+            // Strategy
+            Console.WriteLine("Developer received update");
+        }
+    }
+
+    class Tester : IEmployee
+    {
+        public void Update()
+        {
+            // Strategy
+            Console.WriteLine("Tester received update");
+        }
+    }
+ 
