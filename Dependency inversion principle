@@ -1,3 +1,17 @@
+Association, Composition and Aggregation:
+1. Association : Assocaition is a relationship between two classes where it can have one to one and one to many relationship. Assocaition contains Composition and Aggregation.
+2. Composition : Its is a death relationship . One object is dependent on another object and once the lifetime of object is over, the dependent object cannot exist.
+    Example: Car and Engine, where Engine lifetime is controlled by Car. 
+3. Aggregation : Aggregation is 'has a' relationship and is undirectional (One way relationship). One class is aware of another class, but not vice cersa. But both are independent.
+    Example: Car is dependent on driver (Car has a driver), but not vice versa. But both class/objects are independent of each other. 
+
+
+Dependency inversion principle :
+1. DPI states higher level modules shall be loosely coupled to the lower level modules.
+2. This shall enable Run time polymorphism where the lower level modules are unware of the object instance and will be passed on to the lower modules.
+Example: In the below example, IQueue masks the implementation of the queue's and ITaskScheduler does not know about the logic within Iqueue. 
+The client or hgigher level module can now pass the instance of the object required.
+
 class Main
     {
         public static void Main(string[] args)
