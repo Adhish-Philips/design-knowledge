@@ -1,0 +1,152 @@
+Decorator pattern :
+Decorator pattern hepls in using object without altering its structure. It is achieved by using Composite pattern.
+Other strategy class inherits a common interface and composite class both implements and inherits the same interface.
+In the below exmaple: The MemoryStream and NetworkStream are strategy class and inherits the IStream. Each can have a flavor of BufferStream. 
+Hence BufferStream both implements and inherits the IStream, so we can instantiate MemoryStream from BufferStream or NetworkStream from BufferStream as per the user need.
+
+class StreamClass
+    {
+        public static void Main(string[] args)
+        {
+            IStream bufferedMemoryStream = new BufferStream(new MemoryStream());
+            IStream bufferedNetworkStream = new BufferStream(new NetworkStream());
+            bufferedMemoryStream.Read();
+            bufferedNetworkStream.Read();
+
+        }
+    }
+
+    interface IStream
+    {
+        void Read();
+        void Write();
+    }
+    
+
+    class BufferStream : IStream
+    {
+        public BufferStream(IStream stream)
+        {
+            _stream = stream;
+        }
+
+        private IStream _stream;
+        public void Read()
+        {
+            Console.WriteLine(nameof(BufferStream) + "Read");
+            _stream.Read();
+        }
+
+        public void Write()
+        {
+            Console.WriteLine(nameof(BufferStream) + "write");
+            _stream.Write();
+        }
+    }
+
+    class MemoryStream : IStream
+    {
+        public void Read()
+        {
+            Console.WriteLine(nameof(MemoryStream)+"Read");
+        }
+
+        public void Write()
+        {
+            Console.WriteLine(nameof(MemoryStream) + "Write");
+        }
+    }
+
+    class NetworkStream : IStream
+    {
+        public void Read()
+        {
+            Console.WriteLine(nameof(MemoryStream) + "Read");
+        }
+
+        public void Write()
+        {
+            Console.WriteLine(nameof(MemoryStream) + "Write");
+        }
+    }
+    
+    Chain of responsibility pattern:
+    This pattern creates chain of receiver objects for a given request. Each objects contains reference of sub sequent object. All the objects inherits the same class.
+    In the below example, FirmwareActivity class is implemented by Authentication, Cache and Backup. Authentication sets successor as cache and cache as backup.
+    When Worklow starts, which receives FirmwareActivity it executes one by one and responsibility is only known for sub sequent objects and not knonw to the Workflow.
+    
+    class FirmWareWorkflow
+    {
+
+        public void Start()
+        {
+            Workflow workflow = new Workflow();
+            
+            FirmwareActivity authentication = new Authentication();
+            FirmwareActivity backup = new Backup();
+            FirmwareActivity cache = new CacheCheck();
+
+            // Authentication, backup and cache
+            authentication.SetSuccessor(backup);
+            backup.SetSuccessor(cache);
+
+            workflow.Start(authentication);
+        }
+    }
+
+    abstract class FirmwareActivity
+    {
+        protected FirmwareActivity _activity;
+        public abstract void Execute();
+        public abstract void SetSuccessor(FirmwareActivity firmwareActivity);
+
+    }
+
+    class Workflow
+    {
+
+        public void Start(FirmwareActivity firmwareActivity)
+        {
+            firmwareActivity.Execute();
+        }
+    }
+    class Authentication : FirmwareActivity
+    {
+        public override void Execute()
+        {
+            _activity.Execute();
+        }
+
+        public override void SetSuccessor(FirmwareActivity firmwareActivity)
+        {
+            _activity = firmwareActivity;
+        }
+        
+    }
+
+    class CacheCheck : FirmwareActivity
+    {
+        public override void Execute()
+        {
+            _activity.Execute();
+        }
+
+        public override void SetSuccessor(FirmwareActivity firmwareActivity)
+        {
+            _activity = firmwareActivity;
+        }
+    }
+
+    class Backup : FirmwareActivity
+    {
+        public override void Execute()
+        {
+            _activity.Execute();
+        }
+
+        public override void SetSuccessor(FirmwareActivity firmwareActivity)
+        {
+            _activity = firmwareActivity;
+        }
+    }
+    
