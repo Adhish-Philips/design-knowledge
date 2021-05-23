@@ -1,0 +1,117 @@
+Visitor pattern: 
+- Visitor pattern is used when different strategies are to be used in the different components. Hence visitor requests the strategy class and strategy accept the visitor request.
+- In the below example Text, Header and Link are strategy class which use visitor interface (IDocumentConverter).
+- when any visotor such as PdfConverter, HtmLConverter request the visitor, it internally calls visoitor method (Visit). 
+- The visitor is aware of all the strategy and needs to adapt when a new strategy arrives and update the same in its interface so that strategyclass structure is not modified.
+
+
+class Document
+    {
+        private IList<IDocumentPart> documentParts;
+
+        public void Converter()
+        {
+            Header header = new Header();
+            Link link = new Link();
+            Text text = new Text();
+            documentParts = new List<IDocumentPart>() {{header}, {link}, {text}};
+            PdfConverter converter = new PdfConverter();
+
+            foreach (var documentPart in documentParts)
+            {
+                documentPart.Convert(converter);
+            }
+            
+        }
+    }
+    class PdfConverter : IDocumentConverter
+    {
+        public void Convert(Header header)
+        {
+            Console.WriteLine("PdfConverter: " + header.BannerImage);
+        }
+
+        public void Convert(Link link)
+        {
+            Console.WriteLine("PdfConverter: " + link.Url);
+        }
+
+        public void Convert(Text text)
+        {
+            Console.WriteLine("PdfConverter: " + text.Content);
+        }
+    }
+
+    class HtmlConverter : IDocumentConverter
+    {
+        public void Convert(Header header)
+        {
+            Console.WriteLine("HtmlConverter: " + header.BannerImage);
+        }
+
+        public void Convert(Link link)
+        {
+            Console.WriteLine("HtmlConverter: " + link.Url);
+        }
+
+        public void Convert(Text text)
+        {
+            Console.WriteLine("HtmlConverter: " + text.Content);
+        }
+    }
+
+    interface IDocumentConverter
+    {
+        void Convert(Text text);
+        void Convert(Header header);
+
+        void Convert(Link link);
+    }
+
+    interface IDocumentPart
+    {
+        void Convert(IDocumentConverter converter);
+    }
+    
+
+    class Text : IDocumentPart
+    {
+        private string _text = "TextContent";
+        public string Content
+        {
+            get { return _text; }
+            set { value = _text; }
+        }
+        public new void Convert(IDocumentConverter converter)
+        {
+            converter.Convert(this);
+        }
+    }
+
+    class Header : IDocumentPart
+    {
+        private string _banner = "BannerImage";
+        public string BannerImage
+        {
+            get { return _banner; }
+            set { value = _banner; }
+        }
+        public new void Convert(IDocumentConverter converter)
+        {
+            converter.Convert(this);
+        }
+    }
+
+    class Link : IDocumentPart
+    {
+        private string _url = "Link";
+        public string Url
+        {
+            get { return _url; }
+            set { value = _url; }
+        }
+        public new void Convert(IDocumentConverter converter)
+        {
+            converter.Convert(this);
+        }
+    }
