@@ -1,0 +1,188 @@
+State pattern: Change of each states are implemented by respective concrete state class.  
+
+class HandleBank
+    {
+        public static void Run()
+        {
+            IAccountState accountState = new ActiveState();
+            IBank bank = new Bank();
+            bank.SetState(accountState);
+
+            bank.Withdraw(100);
+            bank.Deposit(500);
+            bank.Deposit(500);
+            bank.Withdraw(200);
+            
+            Context context = new Context(new ConcreteStateA());
+            context.Request();
+        }
+
+        public static void Main(string[] args)
+        {
+            Run();
+        }
+    }
+    interface IBank
+    {
+        void SetState(IAccountState accountState);
+        void Withdraw(double amount);
+        void Deposit(double amount);
+    }
+
+    class Bank : IBank
+    {
+        private IAccountState _accountState;
+
+        public void SetState(IAccountState accountState)
+        {
+            _accountState = accountState;
+        }
+
+        public IAccountState GetState()
+        {
+            return _accountState;
+        }
+
+        public void Withdraw(double amount)
+        {
+            _accountState.Withdraw(amount);
+        }
+
+        public void Deposit(double amount)
+        {
+            _accountState.Deposit(amount);
+        }
+    }
+
+    interface IAccountState
+    {
+        void Withdraw(double amount);
+        void Deposit(double amount);
+        IBank Bank { get; set; }
+    }
+
+    abstract class AccountState : IAccountState
+    {
+        protected double Balance { get; set; }
+        protected const double MinimumBalance = 500;
+        private IBank _bank;
+        public IBank Bank
+        {
+            get { return _bank; }
+            set { _bank = value; }
+        }
+
+        public virtual void Withdraw(double amount)
+        {
+            Balance = Balance - amount;
+        }
+
+        public virtual void Deposit(double amount)
+        {
+            Balance = Balance + amount;
+        }
+
+        public abstract void ChangeState();
+    }
+
+    class SuspendState : AccountState
+    {
+        private IAccountState _accountState;
+
+        
+        public override void Withdraw(double amount)
+        {
+            base.Withdraw(amount);
+            ChangeState();
+        }
+
+        public override void Deposit(double amount)
+        {
+            base.Deposit(amount);
+            ChangeState();
+        }
+
+        public override void ChangeState()
+        {
+            if (Balance < MinimumBalance)
+            {
+                Bank.SetState(new OdState());
+            }
+            else if (Balance > MinimumBalance)
+            {
+                Bank.SetState(new ActiveState());
+            }
+            else if (Balance <= 0)
+            {
+                
+            }
+        }
+
+
+
+    }
+    class ActiveState : AccountState
+    {
+        private IAccountState _accountState;
+
+        public override void Withdraw(double amount)
+        {
+            // Subtract from main
+            base.Withdraw(amount);
+            ChangeState();
+        }
+
+        public override void Deposit(double amount)
+        {
+            base.Withdraw(amount);
+            ChangeState();
+        }
+
+        public override void ChangeState()
+        {
+            if (Balance < MinimumBalance)
+            {
+                Bank.SetState(new OdState());
+            }
+            else if (Balance > MinimumBalance)
+            {
+            }
+            else if (Balance <= 0)
+            {
+                Bank.SetState(new SuspendState());
+            }
+        }
+    }
+
+    class OdState : AccountState
+    {
+        private IAccountState _accountState;
+        
+        public override void Withdraw(double amount)
+        {
+            // Subtract from main
+            base.Withdraw(amount);
+            ChangeState();
+        }
+
+        public override void Deposit(double amount)
+        {
+            base.Withdraw(amount);
+            ChangeState();
+        }
+        public override void ChangeState()
+        {
+            if (Balance < MinimumBalance)
+            {
+                
+            }
+            else if (Balance > MinimumBalance)
+            {
+                Bank.SetState(new ActiveState());
+            }
+            else if (Balance <= 0)
+            {
+                Bank.SetState(new SuspendState());
+            }
+        }
+    }
