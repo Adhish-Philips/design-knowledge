@@ -1,0 +1,188 @@
+Bridge pattern:
+Bridge pattern separates abstraction from its implementation and both can vary independently. The abstraction acts as a bridge and used by the concrtete class rather than inheriting it.
+Example1:
+In the below example, the ProgramParadigm is abstraction and Language is implementation, where language uses ProgramParadigm. 
+Heterogenous is a composite class which can take both ObjectOrientated and Prcedural language.
+
+class Run
+    {
+        public static void ERun()
+        {
+            ObjectOrientated objectOrientated = new ObjectOrientated();
+            CSharp cSharp = new CSharp(objectOrientated);
+            cSharp.Implement();
+
+            Heterogenous heterogenous = new Heterogenous();
+            heterogenous.AddParadim(new ObjectOrientated());
+            heterogenous.AddParadim(new Procedural());
+            C c = new C(heterogenous);
+            c.Implement();
+        }
+
+        //public static void Main(string[] args)
+        //{
+        //    ERun();
+        //}
+    }
+    abstract class ProgramParidgm
+    {
+        protected Language _language;
+        public abstract string GetUnit();
+    }
+
+    class Heterogenous : ProgramParidgm
+    {
+        private IList<ProgramParidgm> programParidgms = new List<ProgramParidgm>();
+
+        public void AddParadim(ProgramParidgm programParidgm)
+        {
+            programParidgms.Add(programParidgm);
+        }
+        public override string GetUnit()
+        {
+            return "Heterogenous";
+        }
+
+    }
+
+    class ObjectOrientated : ProgramParidgm
+    {
+        public override string GetUnit()
+        {
+            return "ObjectOrientated";
+        }
+
+    }
+
+    class Procedural : ProgramParidgm
+    {
+        public override string GetUnit()
+        {
+            return "Procedural";
+        }
+
+    }
+
+    abstract class Language
+    {
+        protected ProgramParidgm _programParidgm;
+        public abstract void Implement();
+    }
+
+    class Cpp : Language
+    {
+        public Cpp(ProgramParidgm programParidgm)
+        {
+            _programParidgm = programParidgm;
+        }
+
+        public override void Implement()
+        {
+            _programParidgm.GetUnit();
+        }
+    }
+    class CSharp: Language
+    {
+        public CSharp(ProgramParidgm programParidgm)
+        {
+            _programParidgm = programParidgm;
+        }
+        public override void Implement()
+        {
+            _programParidgm.GetUnit();
+        }
+
+    }
+
+    class C : Language
+    {
+        public C(ProgramParidgm programParidgm)
+        {
+            _programParidgm = programParidgm;
+        }
+        public override void Implement()
+        {
+            _programParidgm.GetUnit();
+        }
+    }
+    
+    
+    Example2: Feed is abstraction andacsta as bridge to Animal which uses the feed.
+    class Execute
+    {
+        public static void Run()
+        {
+            MorningFeed morningFeed = new MorningFeed();
+            Horse horse = new Horse(morningFeed);
+            horse.NumLegs();
+        }
+
+        public static void Main(string[] args)
+        {
+            Run();
+        }
+    }
+    abstract class Feed
+    {
+        public abstract void FeedAnimal();
+    }
+
+    class MorningFeed : Feed
+    {
+        public override void FeedAnimal()
+        {
+            Console.WriteLine("Feeding:"+nameof(MorningFeed));
+        }
+    }
+    class EveningFeed : Feed
+    {
+        public override void FeedAnimal()
+        {
+            Console.WriteLine("Feeding:" + nameof(EveningFeed));
+        }
+    }
+
+    abstract class Animal
+    {
+        protected Feed _feed;
+        public abstract void NumLegs();
+    }
+
+    class Horse : Animal
+    {
+        public Horse(Feed feed)
+        {
+            _feed = feed;
+        }
+        public override void NumLegs()
+        {
+            _feed.FeedAnimal();
+        }
+    }
+
+    class Pig : Animal
+    {
+        public Pig(Feed feed)
+        {
+            _feed = feed;
+        }
+        public override void NumLegs()
+        {
+            _feed.FeedAnimal();
+        }
+    }
+
+    class Cow : Animal
+    {
+        public Cow(Feed feed)
+        {
+            _feed = feed;
+        }
+        public override void NumLegs()
+        {
+            _feed.FeedAnimal();
+        }
+    }
+    
+    Example3:
+    
