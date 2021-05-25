@@ -1,0 +1,209 @@
+Oberver pattern:
+Subject implements the IObserver and dependents/observers inherits IObserver and the subject notifies the observer.
+
+In the below example, the Window implements button and text box, text box is cleared on button click. Hence the button implements the IButtonClickObserver and notifies the observer which is Window on button click.
+public static void Execute()
+        {
+            Window window = new Window();
+            window.CaptureButtonClick();
+        }
+
+        //public static void Main(string[] args)
+        //{
+        //    Execute();
+        //}
+    }
+    public class Window : IButtonClickObserver
+    {
+        Button _btn = new Button();
+        TextBox _text = new TextBox();
+
+        public Window()
+        {
+            _btn.Subscribe(this);
+        }
+        public void CaptureButtonClick()
+        {
+            _btn.OnClick();
+        }
+
+        public void Notify()
+        {
+            _text.Clear();
+        }
+    }
+    public interface IButtonClickObserver
+    {
+        void Notify();
+    }
+
+    public class Button
+    {
+        List<IButtonClickObserver> observers = new List<IButtonClickObserver>();
+
+        public void Subscribe(IButtonClickObserver observer)
+        {
+            this.observers.Add(observer);
+        }
+
+        public void UnSubscribe(IButtonClickObserver observer)
+        {
+            this.observers.Remove(observer);
+        }
+
+        public void OnClick()
+        {
+            foreach (IButtonClickObserver observer in observers)
+            {
+                observer.Notify();
+            }
+
+        }
+    }
+
+    public class TextBox
+    {
+        public void Clear()
+        {
+            Console.WriteLine("Text Box Content Cleared");
+        }
+    }
+    
+    
+Mediator pattern:
+Similar to observer pattern, where instead of subject implementing the observer, a mediator will be knwon its observers. 
+A mediator provides publish and subscibe with event name and common interface to subscribe (ISubscibe)
+
+In the below example, the ModuleD publishes and ModuleA gets subscibes and gets notified. ModuleD inherits IPublish and ModuleA inherits the ISubsribe and both implements the IEventAggregator.
+ModuleA subscibes to the specific event and ModuleD publishes same specific event and notfiies ModuleA.
+
+
+class Execute
+    {
+        public static void Run()
+        {
+            IEventAggregator eventAggregator = new EventAggregator();
+            string eventName = "E1";
+            ISubscribe moduleA = new ModuleA(eventAggregator, eventName);
+            IPublish moduleD = new ModuleD(eventAggregator);
+            moduleD.Publish(eventName);
+            
+        }
+
+        public static void Main(string[] args)
+        {
+            Run();
+        }
+    }
+    interface ISubscribe
+    {
+        void Notify(string eventName);
+    }
+
+    interface IPublish
+    {
+        void Publish(string eventName);
+    }
+
+    class ModuleA : ISubscribe
+    {
+        private IEventAggregator _eventAggregator;
+        public ModuleA(IEventAggregator eventAggregator, string eventName)
+        {
+            _eventAggregator = eventAggregator;
+            eventAggregator.Subscribe(eventName, this);
+        }
+
+        public void Notify(string eventName)
+        {
+            Console.WriteLine("Notified event: {0}", eventName);
+        }
+    }
+
+    class ModuleD : IPublish
+    {
+        private IEventAggregator _eventAggregator;
+        public ModuleD(IEventAggregator eventAggregator)
+        {
+            _eventAggregator = eventAggregator;
+        }
+
+        public void Publish(string eventName)
+        {
+            _eventAggregator.Publish(eventName);
+        }
+    }
+
+    interface IEventAggregator
+    {
+        void Publish(string eventName);
+        void Subscribe(string eventName, ISubscribe subscribe);
+    }
+
+    class EventAggregator : IEventAggregator
+    {
+        IDictionary<string, IList<ISubscribe>> _subscribers = new Dictionary<string, IList<ISubscribe>>();
+        public void Publish(string eventName)
+        {
+            if (_subscribers.ContainsKey(eventName))
+            {
+                foreach (var subscribeList in _subscribers[eventName])
+                {
+                    subscribeList.Notify(eventName);
+                }
+            }
+        }
+
+        public void Subscribe(string eventName, ISubscribe subscribe)
+        {
+            if (_subscribers.ContainsKey(eventName))
+            {
+                _subscribers[eventName].Add(subscribe);
+            }
+            else
+            {
+                _subscribers.Add(eventName, new List<ISubscribe>() {subscribe});
+            }
+        }
+    }
+
+Proxy pattern :
+Proxy pattern is wrapper to actual class. Proxy class uses decorator pattern which both inherits and implments common interface.
+In the below example, Gateway is inherited by InternetGateway and GatewayProxy, where GatewayProxy implements and inherits Gateway. 
+First the request is made to GatewayProxy and then it routes to the InternetGateway.
+
+class Run
+    {
+        public static void Execute()
+        {
+            Gateway proxy = new GatewayProxy(new InternetGateway());
+            proxy.AcceptRequest("google.com");
+        }
+    }
+
+    abstract class Gateway
+    {
+        public abstract void AcceptRequest(string http);
+    }
+
+    class GatewayProxy : Gateway
+    {
+        private Gateway _gateway;
+
+        public GatewayProxy(Gateway gateway)
+        {
+            _gateway = gateway;
+        }
+        public override void AcceptRequest(string http)
+        {
+            _gateway.AcceptRequest(http);
+        }
+    }
+
+    class InternetGateway : Gateway
+    {
+        public override void AcceptRequest(string http)
+        {
+            Console.WriteLine("Accessing :{0}", http);
+        }
+    }
