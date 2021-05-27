@@ -63,4 +63,53 @@ class Run
     }
     
     Facade pattern:
+    Facade pattern hides the complex implementation of the class ad provides the interface to the client.
+    In the below example, the IDatabaseLayer implements all DB functions, but IQuery exposes only Query and simplifies the object before returning to the Client and also hides the implementation of database.
     
+    class Implementer
+    {
+        public void Run()
+        {
+            IQuery query = new QueryLayer(new DatabaseLayer());
+            query.QueryDatabase();
+        }
+    }
+    interface IDatabaseLayer
+    {
+        object QueryDatabase();
+        void Save(object objectData);
+
+    }
+    interface IQuery
+    {
+        object QueryDatabase();
+    }
+
+    class DatabaseLayer : IDatabaseLayer
+    {
+        public object QueryDatabase()
+        {
+            return new object();
+        }
+
+        public void Save(object objectData)
+        {
+            
+        }
+    }
+
+    class QueryLayer : IQuery
+    {
+        private IDatabaseLayer _databaseLayer;
+        public QueryLayer(IDatabaseLayer databaseLayer)
+        {
+            _databaseLayer = databaseLayer;
+        }
+        public object QueryDatabase()
+        {
+            var dbObject =_databaseLayer.QueryDatabase();
+            // complex query logic and simplify before providing to client
+            return dbObject;
+
+        }
+    }
