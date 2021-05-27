@@ -1,0 +1,158 @@
+Builder pattern:
+The builder pattern separates the construction of complex objects from its representation, and same construction can result in different representations. It constructs object step by step and in final step it returns the object.
+In the below example, constructor uses IHouseBuilder and constructor knows about the house construction. Engineer will only monitor the contractor.
+class Engineer
+    {
+        public void Start()
+        {
+            Contractor contractor = new Contractor(new IglooHouseBuilder());
+            contractor.SetHouse();
+            contractor.GetHouse();
+        }
+    }
+
+    class Contractor
+    {
+        private IHouseBuilder _houseBuilder;
+        public Contractor(IHouseBuilder houseBuilder)
+        {
+            _houseBuilder = houseBuilder;
+        }
+        public IHouseBuilder GetHouse()
+        {
+            return _houseBuilder;
+        }
+
+        public void SetHouse()
+        {
+            _houseBuilder.SetBasement();
+            _houseBuilder.ConstructPillars();
+            _houseBuilder.SetRoof();
+            _houseBuilder.SetInterior();
+        }
+    }
+    interface IHouseBuilder
+    {
+        void SetBasement();
+        void ConstructPillars();
+        void SetRoof();
+        void SetInterior();
+    }
+
+    class ConcreteHouseBuilder : IHouseBuilder
+    {
+        public void SetBasement()
+        {
+            
+        }
+
+        public void ConstructPillars()
+        {
+            
+        }
+
+        public void SetRoof()
+        {
+            
+        }
+
+        public void SetInterior()
+        {
+            
+        }
+    }
+
+    class IglooHouseBuilder : IHouseBuilder
+    {
+        public void SetBasement()
+        {
+
+        }
+
+        public void ConstructPillars()
+        {
+
+        }
+
+        public void SetRoof()
+        {
+
+        }
+
+        public void SetInterior()
+        {
+
+        }
+    }
+    
+    Prototype pattern: This pattern hides the complex implementation of creating instance of an object. It copied object rather than creating new object.
+    In the below example, different colors are instantiated once and cloned later. 
+    ColorCache contains references of all color added and then when requested it return cloned copy of respective color. 
+    
+    class Run
+    {
+        public void Execute()
+        {
+            Cloneable redColor = new RedColor();
+            Cloneable blueColor = new BlueColor();
+            ColorCache colorCache = new ColorCache();
+            colorCache.Add(typeof(RedColor), redColor);
+            colorCache.Add(typeof(BlueColor), blueColor);
+            var redColor1 = colorCache.GetColor(typeof(RedColor));
+        }
+    }
+    public class ColorCache
+    {
+        IDictionary<Type, Cloneable> _types = new Dictionary<Type, Cloneable>();
+
+        public void Add(Type type, Cloneable cloneable)
+        {
+            if (!_types.ContainsKey(type))
+            {
+                _types.Add(type, cloneable);
+            }
+        }
+
+        public Cloneable GetColor(Type type)
+        {
+            if (_types.ContainsKey(type))
+            {
+                return (Cloneable)_types[type].Clone();
+            }
+
+            return null;
+        }
+    }
+
+    
+
+    interface ICloneable
+    {
+        object Clone();
+    }
+
+    public class Cloneable : ICloneable
+    {
+        public object Clone()
+        {
+            // Implement the custom logic
+            return this;
+        }
+    }
+
+    public class RedColor : Cloneable
+    {
+        public void AddColor()
+        {
+
+        }
+    }
+
+    public class BlueColor : Cloneable
+    {
+        public void AddColor()
+        {
+
+        }
+    }
+    
