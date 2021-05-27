@@ -1,0 +1,66 @@
+Momento pattern : Momento pattern restores restore object to previous state.
+In the below example: Textbox implements the Momento class which creates new Momento and set its current object before setting new object into Textbox class.
+Hence when textbox.Undo() is called it sets back the Textbox content from the Momento class which was set earlier thereby restoring.
+
+class Run
+    {
+        public static void Execute()
+        {
+            TextBox box = new TextBox();
+            box.SetText("1");
+            box.SetText("2");
+            box.Undo();
+            box.SetText("3");
+            box.Undo();
+            Console.WriteLine(box.Print());
+        }
+
+        public static void Main(string[] args)
+        {
+            Execute();
+        }
+    }
+    class TextBox
+    {
+        private string _content;
+        private Momento _momento;
+
+        public TextBox()
+        {
+            
+        }
+
+        public void SetText(string content)
+        {
+            _momento = new Momento(_content);
+            _content = content;
+        }
+
+        public void Undo()
+        {
+            _content = _momento.Get();
+        }
+
+        public string Print()
+        {
+            return _content;
+        }
+    }
+
+    class Momento
+    {
+        private string _content;
+
+        public Momento(string content)
+        {
+            _content = content;
+        }
+
+        public string Get()
+        {
+            return _content;
+        }
+    }
+    
+    Facade pattern:
+    
