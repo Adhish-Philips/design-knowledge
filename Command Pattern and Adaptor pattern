@@ -1,0 +1,151 @@
+Command Pattern:
+In command pattern object encapsulates all the information required to perform action or trigger later point of time.
+In the below example: SaveCommand implements the ICommand interface, CommandSource uses the ICommand to set the save command by providing its target information.
+On trigger Save command is triggered in the target object.
+
+class Run
+    {
+        public void Exe()
+        {
+            CommandSource commandSource = new CommandSource();
+            commandSource.setCommand(new SaveCommand(new CommandTarget()));
+            commandSource.Trigger();
+        }
+    }
+
+    class CommandSource
+    {
+        ICommand _command;
+        public void setCommand(ICommand command)
+        {
+            this._command = command;
+        }
+        public void Trigger()
+        {
+            this._command.Save();
+        }
+    }
+    
+    interface ICommand
+    {
+        void Save();
+    }
+
+    class SaveCommand : ICommand
+    {
+        CommandTarget _target;
+
+        public SaveCommand(CommandTarget commandTarget)
+        {
+            _target = commandTarget;
+        }
+
+        public void Save()
+        {
+            _target.Method();
+        }
+    }
+
+    class SaveAllCommand : ICommand
+    {
+        private IList<ICommand> _commands = new List<ICommand>();
+        public void AddCommand(ICommand command)
+        {
+            _commands.Add(command);
+        }
+
+        public void Save()
+        {
+            foreach (var _command in _commands)
+            {
+                _command.Save();
+            }
+        }
+    }
+    
+    class CommandTarget
+    {
+        public void Method()
+        {
+
+        }
+        
+    }
+    
+    Adaptor pattern:
+    Adaptor pattern is used when there is interface mismatch. If the interafce is not conumable by the client a new interface is introduced which is compatible to both.
+    In the below example: ILegacyPlatform exposes old platform database query and return old plaform objects LegacyObject, but client requires to access next gen from database in new format NextGenObject. 
+    Hence Adaptor implments ILegacyPlatform and the internall Adaptor uses ILegacyPlatform and converts from NextGenObject to LegacyObject on set and vice verse on get.
+    
+    class Run
+    {
+        public void Execute()
+        {
+            INextGenPlatform nextGenPlatform = new Adaptor(new LegacyPlatform());
+            var nextGenObject = nextGenPlatform.QueryDatabase("db1");
+        }
+    }
+    interface ILegacyPlatform
+    {
+        void SaveIntoDatabase(LegacyObject objectToSave);
+        LegacyObject QueryDatabase(string databaseKey);
+    }
+
+    interface INextGenPlatform
+    {
+        void SaveIntoDatabase(NextGenObject objectToSave);
+        NextGenObject QueryDatabase(string databaseKey);
+    }
+
+    class Adaptor : INextGenPlatform
+    {
+        private ILegacyPlatform _legacyPlatform;
+        public Adaptor(ILegacyPlatform legacyPlatform)
+        {
+            _legacyPlatform = legacyPlatform;
+        }
+        public void SaveIntoDatabase(NextGenObject objectToSave)
+        {
+            _legacyPlatform.SaveIntoDatabase(GetLegacyObject(objectToSave));
+        }
+
+        public NextGenObject QueryDatabase(string databaseKey)
+        {
+            var legacyObject = _legacyPlatform.QueryDatabase(databaseKey);
+            return GetNextGenObject(legacyObject);
+        }
+
+        private LegacyObject GetLegacyObject(NextGenObject nextGenObject)
+        {
+            return new LegacyObject();
+        }
+
+        private NextGenObject GetNextGenObject(LegacyObject legacyObject)
+        {
+            return new NextGenObject();
+        }
+    }
+
+    class LegacyPlatform : ILegacyPlatform
+    {
+        public void SaveIntoDatabase(LegacyObject objectToSave)
+        {
+            
+        }
+
+        public LegacyObject QueryDatabase(string databaseKey)
+        {
+            return new LegacyObject();
+        }
+    }
+
+    class LegacyObject
+    {
+
+    }
+
+    class NextGenObject
+    {
+
+    }
+    
